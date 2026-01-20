@@ -1,122 +1,86 @@
+# Sunnee Beachwear - Sustainable Management System (v2.0)
 
-<!-- ABOUT THE PROJECT -->
-## About The Project
+This TypeScript project simulates the management system for **Sunnee**, an eco-friendly beachwear brand. Version 2.0 represents a radical evolution from the initial prototype, adopting functional and defensive programming paradigms.
 
-This TypeScript project implements a simplified management system of a fictional brand, specialized in beachwear made of recycled plastic. It defines interfaces and classes to handle customer orders and track production processes.
+## Key Refactoring Improvements (What's New in v2.0)
 
+Compared to the previous version, the code has been entirely rewritten to implement:
 
+- **State Immutability**: Methods no longer modify existing objects. Instead, they return new updated instances. This ensures operation traceability and prevents bugs related to shared references.
+- **Defensive Programming**: Introduced _Guard Clauses_ to validate emails, product availability, and ID integrity before processing any order.
+- **Lean Architecture**: Removed redundant interfaces (such as `ICliente`) to reduce unnecessary complexity, maintaining abstraction only where necessary for polymorphism (`IProdotto`, `IProcessoProduzione`).
+- **Centralized Controller**: Introduced the `GestoreOrdini` class as the _Single Source of Truth_ to coordinate orders and production.
 
-### Link
+---
 
-This project has been deployed on [CodePen](https://codepen.io/Gabriele-Abd-Alla-Awad/pen/dPMwroz)
+## Project Architecture
 
+The project is organized into three main layers to ensure separation of concerns and maintainability.
 
+### 1. Abstractions (Interfaces)
 
-### Built With
+I use interfaces to define the "contracts" of the system. This ensures that every component follows a strict structure, making the code easier to scale and test.
 
-* TypeScript
+- **`IProdotto`**: The blueprint for all beachwear items.
+- **`IProcessoProduzione`**: Defines how production lines should handle their internal lists.
+- **`IEsitoOrdine`**: A standardized object for system feedback, containing success status and updated data.
 
+### 2. Core Entities (Classes)
 
-<!-- GETTING STARTED -->
-## Getting Started
+The concrete implementations that handle the specific behavior of the brand's assets.
 
-Since the source code is written in TypeScript, if you want to install this project on your device, the environment must be configured.
+- **Products (`ProdottoStandard`, `ProdottoPersonalizzato`)**: Use polymorphism to manage different swimwear types and pricing (e.g., surcharges for custom embroidery).
+- **Customers (`Cliente`)**: Handle user data and trigger order requests with integrated payment method validation via `Enum`.
 
+### 3. System Orchestrator (Management)
 
-### Prerequisites
+The "brain" of the application that coordinates the entire flow.
 
-You must have the following installed:
-1. **Node.js** and npm (**Node Package Manager**): The JavaScript runtime environment and package manager.
-2. **TypeScript**
+- **`GestoreOrdini`**: Acts as the **Single Source of Truth**. It performs data validation (email, availability), searches for the correct production lines, and updates the global state (always following the principle of immutability).
 
+---
 
+## How to Run
 
-### Installation
-
-If you do not have Node.js installed, download and install it from the [official Node.js website](https://nodejs.org/en/download).
-
-Once Node.js is installed, you can install TypeScript globally via npm:
+1.  **Prerequisites**: Ensure you have `Node.js` (you can download it from the [official Node.js website](https://nodejs.org/en/download)) and `TypeScript` installed:
 
 ```sh
 npm install -g typescript
 ```
 
-
-### Clone the project
-
-To clone the repository:
+2.  **Clone** this repo:
 
 ```sh
-git clone https://github.com/GabryAbdy/beachwear_project-TypeScript.git
+git clone https://github.com/GabryAbdy/beachwear_project-TypeScript.git`
 ```
 
-
-
-### How to Run the Project
-
-
-
-#### - Option 1: Direct Execution via CodePen
-
-The easiest way to view the code structure and see the tests in action is by visiting the CodePen link.
-
-1. **Access the CodePen Link**:
-> https://codepen.io/Gabriele-Abd-Alla-Awad/pen/dPMwroz
-2. **View the Output**: all is run immediately upon loading. The results are visible in the **console panel** at the bottom of the CodePen interface.
-
-#### - Option 2: Execution via Node.js
-
-You can open the file `app.ts` in your IDE and just run the test directly in your terminal.
+3.  **Execution**: You can run the test directly using:
 
 ```sh
-node app.ts
+tsc
+node app.js
 ```
-the results wil be displayed in the terminal.
 
+Still, the easiest way to run it is by visiting the project link on [CodePen](https://codepen.io/Gabriele-Abd-Alla-Awad/pen/dPMwroz).
 
-<!-- CODE STRUCTURE -->
-## Code Structure
+---
 
-The project has an Object-Oriented-Programming (OOP) approach.
+## Test Case Example
 
-### Interfaces
-
-| Interface | Description | Methods |
-| --- | --- | --- |
-| `IProdotto` | Represents an item to be sold or produced. | `assegnaCliente(cliente: ICliente): void` |
-| `ICliente` | Represents a user who can order products. | `ordinaProdotto(prodotto: IProdotto): void` |
-| `IProcessoProduzione` | Groups a set of products into a process of production. | `aggiungiProdotto(prodotto: IProdotto): void` |
-
-### Classes
-
-The classes implements the simple business logic:
-- `Prodotto`: implements `IProdotto` and manages the product status change with the order.
-- `Cliente`: implements `ICliente` and contains the logic to check the availability of a product before purchase.
-- `ProcessoProduzione`: implementes `IProcessoProduzione` and handles the addition of products checking their IDs avouding duplicates.
-
-
-<!-- TEST EXAMPLE -->
-## Test Example
-
-A few instances show the interactions between customers, products and their production processes. Here is an example:
+The new system allows for end-to-end order tracking with detailed feedback:
 
 ```typescript
-// Test available product
-console.log(costumeDaBagno1.stato); // pre-order status: disponibile
+// Executing an immutable order through the customer instance
+const ordineOk = cliente2.ordinaProdotto(costumeExtreme, gestoreOrdiniSunnee);
 
-cliente1.ordinaProdotto(costumeDaBagno1); // Output: "Ordine riuscito! Marco Rossi ha acquistato: costume da bagno (ID: 1)."
+console.log("Esito ordine:", ordineOk);
 
-console.log(costumeDaBagno1.stato); // post-order status: ordinato
+// Checking the updated system state
+gestoreOrdiniSunnee.getStatoSistema();
 ```
+---
 
+## License and Author
 
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-
-<!-- AUTHOR -->
-## Author
-
+Distributed under the MIT License. See `LICENSE.txt` for more information.  
 Gabriele Abd Alla Awad
