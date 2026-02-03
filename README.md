@@ -7,9 +7,11 @@ This TypeScript project simulates the management system for **Sunnee**, an eco-f
 Compared to the previous version, the code has been entirely rewritten to implement:
 
 - **State Immutability**: Methods no longer modify existing objects. Instead, they return new updated instances. This ensures operation traceability and prevents bugs related to shared references.
-- **Defensive Programming**: Introduced _Guard Clauses_ to validate emails, product availability, and ID integrity before processing any order.
-- **Lean Architecture**: Removed redundant interfaces (such as `ICliente`) to reduce unnecessary complexity, maintaining abstraction only where necessary for polymorphism (`IProdotto`, `IProcessoProduzione`).
+- **Defensive & Fail-Fast Programming**: Introduced strict validation in constructors (e.g., Email and Enum checks) using `throw new Error`. This prevents the creation of invalid objects from the start.
+- **Lean Architecture**: Removed redundant interfaces (such as `ICliente`) to reduce unnecessary complexity.
 - **Centralized Controller**: Introduced the `GestoreOrdini` class as the _Single Source of Truth_ to coordinate orders and production.
+- **[NEW] Actual Delegation**: The `GestoreOrdini` no longer contains "God logic". It coordinates the flow, but specific business rules (like availability checks or list updates) are delegated to `Prodotto` and `ProcessoProduzione`.
+- **[NEW] Standardized Feedback Loop**: Implementation of a generic `IEsito<T>` interface to ensure consistent communication between all system layers (UI-ready).
 
 ---
 
@@ -17,26 +19,31 @@ Compared to the previous version, the code has been entirely rewritten to implem
 
 The project is organized into three main layers to ensure separation of concerns and maintainability.
 
-### 1. Abstractions (Interfaces)
+### 1. [NEW] Feedback Contract (Interface)
 
-I use interfaces to define the "contracts" of the system. This ensures that every component follows a strict structure, making the code easier to scale and test.
-
-- **`IProdotto`**: The blueprint for all beachwear items.
-- **`IProcessoProduzione`**: Defines how production lines should handle their internal lists.
-- **`IEsitoOrdine`**: A standardized object for system feedback, containing success status and updated data.
+- **`IEsito<T>`**: A powerful generic interface used for every system response. It provides a `successo` flag, a `messaggio` for the user, and an optional `dati` payload of type `T`.
 
 ### 2. Core Entities (Classes)
 
 The concrete implementations that handle the specific behavior of the brand's assets.
 
-- **Products (`ProdottoStandard`, `ProdottoPersonalizzato`)**: Use polymorphism to manage different swimwear types and pricing (e.g., surcharges for custom embroidery).
-- **Customers (`Cliente`)**: Handle user data and trigger order requests with integrated payment method validation via `Enum`.
+- **Products (`ProdottoStandard`, `ProdottoPersonalizzato`)**: Use polymorphism to manage different swimwear types. The `assegnaProdotto` method is now the source of truth for its own availability.
+- **Customers (`Cliente`)**: Validates identity (Email) and payment methods upon instantiation. It acts as the trigger for the ordering process.
+- **Production Lines (`ProcessoProduzione`)**: Manages a collection of immutable products, handling updates and new entries with collision detection (ID integrity).
 
 ### 3. System Orchestrator (Management)
 
 The "brain" of the application that coordinates the entire flow.
 
-- **`GestoreOrdini`**: Acts as the **Single Source of Truth**. It performs data validation (email, availability), searches for the correct production lines, and updates the global state (always following the principle of immutability).
+- **`GestoreOrdini`**: Acts as the **Single Source of Truth**. It maps products to their respective production lines and orchestrates the immutable update of the entire system state.
+
+---
+
+## Technical Highlights
+
+- **Generics**: Used in `IEsito<T>` to maintain type safety while handling different data payloads.
+- **Method Overriding**: Specifically used in `Prodotto` subclasses to handle unique assignment logic.
+- **Advanced Array Methods**: Extensive use of `.map()`, `.some()`, and `.find()` to maintain a declarative and immutable coding style.
 
 ---
 
@@ -65,19 +72,18 @@ Still, the easiest way to run it is by visiting the project link on [CodePen](ht
 
 ---
 
-## Test Case Example
+## Test Suite & Validation Scenarios
 
-The new system allows for end-to-end order tracking with detailed feedback:
+The project includes a robust test suite designed to verify the system's behavior across different operational contexts. Each test case demonstrates the reliability of our **Defensive Programming** and **Immutable State** approach.
 
-```typescript
-// Executing an immutable order through the customer instance
-const ordineOk = cliente2.ordinaProdotto(costumeExtreme, gestoreOrdiniSunnee);
+### 🔍 Verified Scenarios:
 
-console.log("Esito ordine:", ordineOk);
+1.  **Successful Order Flow**: Validates the complete cycle of a standard purchase, ensuring the product state transitions correctly from `Disponibile` to `Ordinato` and is assigned to the correct `Cliente`.
+2.  **Inventory Constraints (Business Logic)**: Verifies that the system prevents orders for products marked as `Esaurito`, returning a clear `IEsito` message without altering the system state.
+3.  **Fail-Fast Data Validation**: Uses `try...catch` blocks to confirm that the system correctly blocks the instantiation of `Cliente` objects with malformed email addresses or unsupported payment methods.
+4.  **Production Line Integrity**: Tests the `aggiungiProdotto` logic to ensure no duplicate IDs can enter the production process, preventing data corruption and "typo" errors.
+5.  **Global State Consistency**: A final verification step that checks if the `GestoreOrdini` (the Single Source of Truth) correctly reflects all previous operations in its global summary.
 
-// Checking the updated system state
-gestoreOrdiniSunnee.getStatoSistema();
-```
 ---
 
 ## License and Author
