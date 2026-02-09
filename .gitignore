@@ -1,3 +1,2 @@
-# file .js generati
-*.js.map
-*.js
+# Output della compilazione
+dist/
