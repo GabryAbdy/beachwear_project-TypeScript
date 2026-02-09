@@ -13,7 +13,7 @@ export class GestoreOrdini {
 
   /*
    * Riceve l'ordine dal cliente.
-   * Elabora l'ordine e restituisce esito integrabile in una interfaccia grafica.
+   * Restituisce un oggetto integrabile in una interfaccia grafica.
    */
   eseguiOrdine(
     cliente: Cliente,
@@ -54,9 +54,7 @@ export class GestoreOrdini {
 
     // 2.4 Aggiornamento Processi Interni Gestore (Responsabilità del Gestore)
     const processoAggiornato = esitoAggiornamento.dati;
-    this._processi = this._processi.map((p) =>
-      p === processoInteressato ? processoAggiornato : p,
-    );
+    this.aggiornaProcessoInterno(processoInteressato, processoAggiornato);
 
     // --- ESITO ---
     return {
@@ -74,24 +72,26 @@ export class GestoreOrdini {
     nomeProcesso: string,
     nuovoProdotto: Prodotto,
   ): IEsito<ProcessoProduzione> {
-    // Verifica Esistenza Processo
-    const processoTrovato = this._processi.find((p) => p.nome === nomeProcesso);
+    // Ricerca processo
+    const processoTrovato = this.trovaProcessoPerNome(nomeProcesso);
+
+    // Verifica esistenza processo (Early Return)
     if (!processoTrovato) {
+      // --- ESITO ERRORE ---
       return {
         successo: false,
         messaggio: `[ERRORE] La linea "${nomeProcesso}" non esiste nel sistema.`,
       };
     }
 
-    // Aggiornamento dello stato
-    const indice = this._processi.indexOf(processoTrovato);
+    // Aggiunta prodotto al processo
     const esito = processoTrovato.aggiungiProdotto(nuovoProdotto);
-    if (esito.successo) {
-      this._processi = [
-        ...this._processi.slice(0, indice),
-        esito.dati!,
-        ...this._processi.slice(indice + 1),
-      ];
+
+    // Verifica esito aggiunta prodotto
+    if (esito.successo && esito.dati) {
+      // Aggiornamento processo all'interno del gestore
+      const processoAggiornato = esito.dati;
+      this.aggiornaProcessoInterno(processoTrovato, processoAggiornato);
     }
 
     // Risultato
@@ -105,6 +105,19 @@ export class GestoreOrdini {
       const ultimoID = p.prodottiProduzione.at(-1)?.ID || "Nessuno";
       return `${p.nome}: ${numeroProdotti} prodotti presenti (ultimo ID: ${ultimoID}).`;
     });
+  }
+
+  // Metodo di supporto per trovare un processo per nome (utilizzato internamente)
+  private trovaProcessoPerNome(nome: string): ProcessoProduzione | undefined {
+    return this._processi.find((p) => p.nome === nome);
+  }
+
+  // Metodo di supporto per aggiornare un processo all'interno del gestore (utilizzato internamente)
+  private aggiornaProcessoInterno(
+    vecchio: ProcessoProduzione,
+    nuovo: ProcessoProduzione,
+  ): void {
+    this._processi = this._processi.map((p) => (p === vecchio ? nuovo : p));
   }
 
   // Getter Processi del Gestore
