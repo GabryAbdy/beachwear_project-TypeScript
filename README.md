@@ -12,6 +12,7 @@ Compared to the previous version, the code has been entirely rewritten to implem
 - **Centralized Controller**: Introduced the `GestoreOrdini` class as the _Single Source of Truth_ to coordinate orders and production.
 - **[NEW] Actual Delegation**: The `GestoreOrdini` no longer contains "God logic". It coordinates the flow, but specific business rules (like availability checks or list updates) are delegated to `Prodotto` and `ProcessoProduzione`.
 - **[NEW] Standardized Feedback Loop**: Implementation of a generic `IEsito<T>` interface to ensure consistent communication between all system layers (UI-ready).
+- **[NEW] Modular architecture**: Code is split into specialized files (`Prodotto`, `Cliente`, `GestoreOrdini`, etc.) for better maintainability.
 
 ---
 
@@ -49,26 +50,32 @@ The "brain" of the application that coordinates the entire flow.
 
 ## How to Run
 
-1.  **Prerequisites**: Ensure you have `Node.js` (you can download it from the [official Node.js website](https://nodejs.org/en/download)) and `TypeScript` installed:
+1.  **Prerequisites**: Ensure you have `Node.js` installed on your machine (you can download it from the [official Node.js website](https://nodejs.org/en/download)).
 
-```sh
-npm install -g typescript
-```
-
-2.  **Clone** this repo:
+2.  **Clone and Install** this repo:
 
 ```sh
 git clone https://github.com/GabryAbdy/beachwear_project-TypeScript.git`
+cd beachwear_project-Typescript
+npm install
 ```
 
-3.  **Execution**: You can run the test directly using:
+3.  **Execution**: You can compile and run the simulation with these simple commands:
 
 ```sh
-tsc
-node app.js
+# Compile Typescript to Javascript
+npm run build
+
+# Run the logic and see the results in the terminal
+npm start
 ```
 
-Still, the easiest way to run it is by visiting the project link on [CodePen](https://codepen.io/Gabriele-Abd-Alla-Awad/pen/dPMwroz).
+4. **Online Interactive Demo**: The easiest way to explore the modular architecture and see the system in action (including terminal logs) without any local setup is via **StackBlitz**:
+
+> [!TIP]
+> **[Open in StackBlitz](https://stackblitz.com/github/GabryAbdy/beachwear_project-TypeScript?file=src/main.ts)**
+
+_Once the environment is loaded, you can run `npm start` in the integrated terminal to see the simulation output._
 
 ---
 
