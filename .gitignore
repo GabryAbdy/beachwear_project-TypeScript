@@ -1,2 +1,12 @@
 # Output della compilazione
 dist/
+
+# Dipendenze
+node_modules/
+
+# File di log
+npm-debug.log*
+
+# File di sistema/IDE
+.DS_Store
+.vscode/

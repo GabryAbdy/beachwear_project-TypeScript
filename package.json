@@ -1,0 +1,13 @@
+{
+  "name": "sunnee-beachwear-management",
+  "version": "2.1.0",
+  "description": "Sustainable management system for Sunnee beachwear brand",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
