@@ -14,6 +14,18 @@ Compared to the previous version, the code has been entirely rewritten to implem
 - **[NEW] Standardized Feedback Loop**: Implementation of a generic `IEsito<T>` interface to ensure consistent communication between all system layers (UI-ready).
 - **[NEW] Modular architecture**: Code is split into specialized files (`Prodotto`, `Cliente`, `GestoreOrdini`, etc.) for better maintainability.
 
+## Recent Improvements (v2.1)
+
+Following code review feedback, the following refinements have been applied:
+
+- **Import Consistency**: Systematic use of `import type` for type-only imports to improve tree-shaking and clarify compile-time vs runtime dependencies.
+- **Email Validation**: Replaced basic `indexOf` check with regex pattern `/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/` for robust email validation.
+- **Product Comparison**: Implemented `sonoProdottiUguali()` helper function for explicit property-by-property comparison, replacing fragile `JSON.stringify()` approach.
+- **DRY Principle**: Applied Template Method pattern to `assegnaProdotto`, moving shared validation logic to base class while delegating product-specific copy logic to subclasses.
+- **Type Safety**: Removed redundant runtime enum validation, relying on TypeScript's compile-time type checking.
+
+These changes improve code maintainability, performance, and demonstrate professional development practices.
+
 ---
 
 ## Project Architecture
@@ -60,14 +72,19 @@ cd beachwear_project-Typescript
 npm install
 ```
 
-3.  **Execution**: You can compile and run the simulation with these simple commands:
+3.  **Run the Project**:
 
 ```sh
-# Compile Typescript to Javascript
-npm run build
-
-# Run the logic and see the results in the terminal
+# Compile and run the simulation
 npm start
+```
+
+This automatically compiles TypeScript and executes the code.
+
+To compile only (without running):
+
+```sh
+npm run build
 ```
 
 4. **Online Interactive Demo**: The easiest way to explore the modular architecture and see the system in action (including terminal logs) without any local setup is via **StackBlitz**:
@@ -92,6 +109,34 @@ The project includes a robust test suite designed to verify the system's behavio
 5.  **Global State Consistency**: A final verification step that checks if the `GestoreOrdini` (the Single Source of Truth) correctly reflects all previous operations in its global summary.
 
 ---
+
+## Production Considerations
+
+This project demonstrates best practices for a TypeScript portfolio application. In a production environment, additional considerations would include:
+
+### Data Validation
+
+Currently, all data is instantiated within TypeScript with compile-time type checking. For production use with external data sources (APIs, databases, user input), runtime validation would be essential:
+
+- **Schema validation libraries** (Zod, Yup, Joi) for validating incoming data
+- **Database constraints** and migrations
+- **Input sanitization** for security
+
+### Infrastructure & Scalability
+
+- **Database integration** for persistent storage of products, customers, and orders
+- **API layer** with proper error handling and logging
+- **Authentication & Authorization** for multi-user scenarios
+- **Observability** (structured logging, monitoring, tracing)
+
+### Advanced Features
+
+- **Event sourcing** to maintain complete order history
+- **Inventory management** with real-time stock updates
+- **Batch processing** for bulk operations
+- **Caching strategies** for frequently accessed data
+
+This project focuses on demonstrating clean architecture, immutability patterns, and type safety - the foundational principles that would support these production features.
 
 ## License and Author
 
