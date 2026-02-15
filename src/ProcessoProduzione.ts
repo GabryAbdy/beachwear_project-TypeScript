@@ -2,6 +2,21 @@
 import type { IEsito } from "./interfaces.js";
 import type { Prodotto } from "./Prodotto.js";
 
+/*
+ * Confronta due prodotti per uguaglianza su tutte le proprietà.
+ * Usata per distinguere duplicati da conflitti ID.
+ */
+function sonoProdottiUguali(a: Prodotto, b: Prodotto): boolean {
+  return (
+    a.tipo === b.tipo &&
+    a.ID === b.ID &&
+    a.taglia === b.taglia &&
+    a.colore === b.colore &&
+    a.stato === b.stato &&
+    a.clienteAssegnato === b.clienteAssegnato
+  );
+}
+
 export class ProcessoProduzione {
   readonly nome: string;
   readonly descrizione: string;
@@ -62,8 +77,7 @@ export class ProcessoProduzione {
 
     // 2. Verifica Duplicato - Errore Battitura
     if (conflittoID) {
-      const duplicati =
-        JSON.stringify(conflittoID) === JSON.stringify(prodottoNuovo);
+      const duplicati = sonoProdottiUguali(conflittoID, prodottoNuovo);
       if (!duplicati) {
         // 2.1 Errore Battitura
         return {
