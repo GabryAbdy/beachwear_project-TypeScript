@@ -23,15 +23,6 @@ export abstract class Prodotto {
     this.ID = ID;
     this.taglia = taglia;
     this.colore = colore;
-
-    // Validazione Intrinseca Stato Prodotto
-    const valoriPermessi = Object.values(StatoProdotto);
-    if (!valoriPermessi.includes(stato)) {
-      throw new Error(
-        `[ERRORE STATO] Il prodotto ID ${this.ID} ha uno stato non riconosciuto.`,
-      );
-    }
-
     this.stato = stato;
     this.clienteAssegnato = clienteAssegnato;
   }

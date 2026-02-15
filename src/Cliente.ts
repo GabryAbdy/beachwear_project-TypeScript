@@ -27,15 +27,8 @@ export class Cliente {
         "[ERRORE VALIDAZIONE] L'email non è nel formato corretto.",
       );
     }
-    this.email = email;
 
-    // 2. Validazione Intrinseca Metodo di Pagamento Cliente
-    const valoriPermessi = Object.values(MetodoPagamento);
-    if (!valoriPermessi.includes(metodoPagamento)) {
-      throw new Error(
-        "[ERRORE VALIDAZIONE] Metodo di pagamento non supportato.",
-      );
-    }
+    this.email = email;
     this.metodoPagamento = metodoPagamento;
   }
 
