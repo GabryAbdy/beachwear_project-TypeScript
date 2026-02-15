@@ -1,6 +1,6 @@
 // --- src/ProcessoProduzione.ts ---
-import { IEsito } from "./interfaces.js";
-import { Prodotto } from "./Prodotto.js";
+import type { IEsito } from "./interfaces.js";
+import type { Prodotto } from "./Prodotto.js";
 
 export class ProcessoProduzione {
   readonly nome: string;

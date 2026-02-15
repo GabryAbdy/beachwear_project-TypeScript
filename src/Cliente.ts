@@ -1,7 +1,7 @@
 // --- src/Cliente.ts ---
-import { MetodoPagamento } from "./enums.js";
-import { IEsito } from "./interfaces.js";
-import { Prodotto } from "./Prodotto.js";
+import type { MetodoPagamento } from "./enums.js";
+import type { IEsito } from "./interfaces.js";
+import type { Prodotto } from "./Prodotto.js";
 import type { ProcessoProduzione } from "./ProcessoProduzione.js";
 import type { GestoreOrdini } from "./GestoreOrdini.js";
 

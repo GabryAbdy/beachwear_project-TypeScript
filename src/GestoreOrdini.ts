@@ -1,5 +1,5 @@
 // --- src/GestoreOrdini.ts ---
-import { IEsito } from "./interfaces.js";
+import type { IEsito } from "./interfaces.js";
 import type { Prodotto } from "./Prodotto.js";
 import type { Cliente } from "./Cliente.js";
 import { ProcessoProduzione } from "./ProcessoProduzione.js";

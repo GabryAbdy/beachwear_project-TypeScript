@@ -1,6 +1,6 @@
 // --- src/Prodotto.ts ---
 import { StatoProdotto } from "./enums.js";
-import { IEsito } from "./interfaces.js";
+import type { IEsito } from "./interfaces.js";
 import type { Cliente } from "./Cliente.js";
 
 export abstract class Prodotto {
