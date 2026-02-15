@@ -1,8 +1,9 @@
 // --- src/Prodotto.ts ---
 import { StatoProdotto } from "./enums.js";
 import type { IEsito } from "./interfaces.js";
-import type { Cliente } from "./Cliente.js";
+import { Cliente } from "./Cliente.js";
 
+// --- src/Prodotto.ts ---
 export abstract class Prodotto {
   readonly tipo: string;
   readonly ID: number;
@@ -27,14 +28,38 @@ export abstract class Prodotto {
     this.clienteAssegnato = clienteAssegnato;
   }
 
-  /*
-   * Restituisce una nuova istanza del prodotto con stato aggiornato e cliente assegnato.
-   * Non modifica il prodotto esistente, ma ne crea una copia.
+  /**
+   * Assegna il prodotto a un cliente.
+   * Restituisce una nuova istanza con stato aggiornato senza modificare l'originale.
    */
-  abstract assegnaProdotto(
+  assegnaProdotto(
     cliente: Cliente,
-    nuovoStato?: StatoProdotto,
-  ): IEsito<Prodotto>;
+    nuovoStato: StatoProdotto = StatoProdotto.Ordinato,
+  ): IEsito<Prodotto> {
+    // Validazione
+    if (this.stato !== StatoProdotto.Disponibile || this.clienteAssegnato) {
+      return {
+        successo: false,
+        messaggio: `[ERRORE DISPONIBILITÀ] Il prodotto ID ${this.ID} è ${this.stato} o già assegnato.`,
+      };
+    }
+
+    // Creazione copia delegata alla sottoclasse
+    return {
+      successo: true,
+      messaggio: "Prodotto assegnato correttamente.",
+      dati: this.creaCopia(cliente, nuovoStato),
+    };
+  }
+
+  /**
+   * Metodo astratto per creare una copia del prodotto con nuovi valori.
+   * Ogni sottoclasse implementa la propria logica di copia.
+   */
+  protected abstract creaCopia(
+    cliente: Cliente,
+    nuovoStato: StatoProdotto,
+  ): Prodotto;
 }
 
 export class ProdottoStandard extends Prodotto {
@@ -49,29 +74,15 @@ export class ProdottoStandard extends Prodotto {
     super(tipo, ID, taglia, colore, stato, clienteAssegnato);
   }
 
-  assegnaProdotto(
-    cliente: Cliente,
-    nuovoStato: StatoProdotto = StatoProdotto.Ordinato,
-  ): IEsito<Prodotto> {
-    // --- Validazione interna ---
-    if (this.stato !== StatoProdotto.Disponibile || this.clienteAssegnato) {
-      return {
-        successo: false,
-        messaggio: `[ERRORE DISPONIBILITÀ] Il prodotto ID ${this.ID} è ${this.stato} o già assegnato.`,
-      };
-    }
-    return {
-      successo: true,
-      messaggio: "Prodotto assegnato correttamente.",
-      dati: new ProdottoStandard(
-        this.tipo,
-        this.ID,
-        this.taglia,
-        this.colore,
-        nuovoStato, // Nuovo valore passato come argomento
-        cliente, // Cliente assegnato
-      ),
-    };
+  protected creaCopia(cliente: Cliente, nuovoStato: StatoProdotto): Prodotto {
+    return new ProdottoStandard(
+      this.tipo,
+      this.ID,
+      this.taglia,
+      this.colore,
+      nuovoStato,
+      cliente,
+    );
   }
 }
 
@@ -94,30 +105,16 @@ export class ProdottoPersonalizzato extends Prodotto {
     this.sovrapprezzo = sovrapprezzo;
   }
 
-  assegnaProdotto(
-    cliente: Cliente,
-    nuovoStato: StatoProdotto = StatoProdotto.Ordinato,
-  ): IEsito<Prodotto> {
-    // --- Validazione interna ---
-    if (this.stato !== StatoProdotto.Disponibile || this.clienteAssegnato) {
-      return {
-        successo: false,
-        messaggio: `[ERRORE DISPONIBILITÀ] Il prodotto ID ${this.ID} è ${this.stato} o già assegnato.`,
-      };
-    }
-    return {
-      successo: true,
-      messaggio: "Prodotto assegnato correttamente.",
-      dati: new ProdottoPersonalizzato(
-        this.tipo,
-        this.ID,
-        this.taglia,
-        this.colore,
-        nuovoStato, // Nuovo valore passato come argomento
-        this.personalizzazione,
-        this.sovrapprezzo,
-        cliente, // Cliente assegnato
-      ),
-    };
+  protected creaCopia(cliente: Cliente, nuovoStato: StatoProdotto): Prodotto {
+    return new ProdottoPersonalizzato(
+      this.tipo,
+      this.ID,
+      this.taglia,
+      this.colore,
+      nuovoStato,
+      this.personalizzazione,
+      this.sovrapprezzo,
+      cliente,
+    );
   }
 }
