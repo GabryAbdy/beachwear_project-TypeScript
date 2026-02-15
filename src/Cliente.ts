@@ -20,9 +20,9 @@ export class Cliente {
     this.nome = nome;
     this.cognome = cognome;
 
-    // 1. Validazione Intrinseca Email
-    const atIndex = email.indexOf("@");
-    if (atIndex <= 0 || atIndex >= email.length - 1) {
+    // 1. Validazione Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(email)) {
       throw new Error(
         "[ERRORE VALIDAZIONE] L'email non è nel formato corretto.",
       );
